@@ -6,7 +6,7 @@
 #include <string>
 bool is_palindrome(std::string str)
 {
-    int wynik=0;
+    int wynik = 0;
     size_t dlugosc=str.length();
     for(int i=0;i<dlugosc;i++)
     {
