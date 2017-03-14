@@ -8,7 +8,6 @@
 using namespace std;
 int GreatestProduct(const vector<int> &numbers, int k)
 {
-
     int *table1 = new int[k];
     int *table2 = new int[k];
     int *table3 = new int[k];
@@ -78,7 +77,7 @@ int GreatestProduct(const vector<int> &numbers, int k)
     cout << result1 << endl;
     if (result1 > result3){
         return result1;
-    } 
+    }
 
     return result3;
 }
