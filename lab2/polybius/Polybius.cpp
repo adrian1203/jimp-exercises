@@ -8,6 +8,7 @@
 std::string PolybiusCrypt(std::string message)
 {
     std::string zakodowany;
+    
     std::map< char, std::string> szyfr;
     szyfr['a']="11";szyfr['b']="12";szyfr['c']="13";szyfr['d']="14";szyfr['e']="15";
     szyfr['f']="21";szyfr['g']="22";szyfr['h']="23";szyfr['j']="24";szyfr['i']="24";szyfr['k']="25";
