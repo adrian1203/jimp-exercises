@@ -20,7 +20,10 @@ namespace datastructures{
     std::unique_ptr <SmartTree> InsertRightChild(std::unique_ptr<SmartTree> tree, std::unique_ptr<SmartTree> right_subtree);
     void PrintTreeInOrder(const std::unique_ptr<SmartTree> &unique_ptr, std::ostream *out);
     std::string DumpTree(const std::unique_ptr<SmartTree> &tree);
-    //std::unique_ptr <SmartTree> Tree(const std::string &tree, int *tab,int i );
+    //std::unique_ptr <SmartTree> BuildTree(int *tab,int i);
+    std::unique_ptr <SmartTree> Tree(const std::string &tree, int *tab,int i );
+    void SetOnBracket(const std::string &tree, int *i);
+    std::unique_ptr <SmartTree> BuildTree(const std::string &tree, int *i);
     std::unique_ptr <SmartTree> RestoreTree(const std::string &tree);
 }
 
