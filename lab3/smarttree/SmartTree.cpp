@@ -11,7 +11,6 @@
 
 namespace datastructures {
     struct SmartTree;
-
     std::unique_ptr<SmartTree> CreateLeaf(int value) {
         std::unique_ptr<SmartTree> ptr(new SmartTree);
         ptr->root = nullptr;
