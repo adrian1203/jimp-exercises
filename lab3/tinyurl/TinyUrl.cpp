@@ -12,7 +12,6 @@
 using namespace std;
 namespace tinyurl {
     struct TinyUrlCodec;
-
     std::unique_ptr<TinyUrlCodec> Init() {
         TinyUrlCodec url;
         unique_ptr<TinyUrlCodec> ptr(new TinyUrlCodec);
