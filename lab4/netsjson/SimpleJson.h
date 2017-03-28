@@ -13,11 +13,12 @@ using namespace std;
 namespace nets{
     class JsonValue{
     public:
-        JsonValue();
+        JsonValue(){}
         ~JsonValue(){}
         JsonValue(int intvalue);
         JsonValue(double doublevalue);
         JsonValue(string str );
+        JsonValue(const char *);
         JsonValue(bool boolvalue);
         JsonValue(vector <JsonValue> vector1);
         JsonValue(map <string, JsonValue> mapa);
@@ -31,6 +32,15 @@ namespace nets{
         bool boolvalue_;
         vector <JsonValue> vector1_;
         map <string, JsonValue> mapa_;
+        const char *text_;
+
+        int isInt=0;
+        int isDouble=0;
+        int isString=0;
+        int isBool=0;
+        int isVector=0;
+        int isMap=0;
+        int isChar=0;
 
 
     };
