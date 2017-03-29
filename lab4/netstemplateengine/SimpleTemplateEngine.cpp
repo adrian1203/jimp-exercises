@@ -10,6 +10,7 @@ namespace nets {
     View::View(string str) {
         str_ = str;
     }
+
     std::string View::Render(const std::unordered_map<std::string, std::string> &model) const {
         string tekst = str_;
         string tmp2 = "";
