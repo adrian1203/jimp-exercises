@@ -1,46 +1,51 @@
 //
-// Created by adrian on 30.03.17.
+// Created by adrian on 29.03.17.
 //
 
-#include "TextPool.h"
-#include <initializer_list>
-#include <string>
-#include <experimental/string_view>
-#include <set>
 #include <iostream>
-using namespace std;
-namespace pool{
-    TextPool::TextPool(const std::initializer_list<std::string> &elements){
-        for (const string &n :elements) {
-            if (set_.find(n) != set_.end()) {}
-            else {
-                set_.emplace(n);
+#include "TextPool.h"
+
+namespace pool {
+    TextPool::TextPool() {}
+
+    TextPool::~TextPool() {
+
+        str_.clear();
+    }
+
+    TextPool::TextPool(initializer_list<string> initializer_str) {
+
+        for (const string &n :initializer_str) {
+            if (str_.find(n) == str_.end()) {
+                str_.insert(n);
             }
         }
     }
-    std::experimental::string_view TextPool:: Intern(const std::string &str){
-        //int lenght=counter_.size();
-        int i=0;
-        for(auto n:set_){
-            if(n==str){
-                return n;
-            }
+
+    TextPool::TextPool(TextPool &&other) {
+
+        swap(str_, other.str_);
+    }
+
+
+    TextPool &TextPool::operator=(TextPool &&other) {
+
+        if (this != &other) {
+            swap(str_, other.str_);
+            return *this;
         }
-        set_.insert(str);
-        for(auto n:set_){
-            if(n==str){
-                return n;
-            }
-        }
+        return *this;
+    }
+
+    std::experimental::string_view TextPool::Intern(const std::string &str) {
+        auto ptr_string = str_.insert(str);
+        experimental::string_view word = *ptr_string.first;
+        return word;
 
     }
-    size_t TextPool::StoredStringCount() const{
-        return set_.size();
+
+    size_t TextPool::StoredStringCount() const {
+
+        return str_.size();
     }
-    //pierwszy
-    /*TextPool::TextPool(const TextPool &other) {
-        set_.operator=(other.set_);
-    }*/
-
-
-}
+};
