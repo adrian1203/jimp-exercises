@@ -6,6 +6,7 @@
 #include "TextPool.h"
 
 namespace pool {
+
     TextPool::TextPool() {}
 
     TextPool::~TextPool() {
