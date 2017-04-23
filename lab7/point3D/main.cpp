@@ -11,13 +11,13 @@ int main(){
     //pierwszy wywoływane jest konstruktor klasy bazowej 2d
     //drugi wywoływany jest konstruktor klasy pochodnej 3d
     //w przypadku dekonstruktorów pierwszy wywoływany jest dla klasy pochodnej, później dla klasy bazowej
-    //Point3d  a(1,2,3);
+    Point3d  a(1,2,3);
 
     //zadanie 6
     //zwraca odległośc pomiędzy punktami  w 2d
-    //Point3d point2d(1,2);
-    //Point3d point3d (4,1,3);
-    //cout<<"Distance:"<<point2d.Distance(point3d)<<endl;
+    Point3d point2d(1,2);
+    Point3d point3d (4,1,3);
+    cout<<"Distance:"<<point2d.Distance(point3d)<<endl;
 
     //zadanie 7
     //ponieważ klasa Point3D nie ma przeciążonego operatora <<
