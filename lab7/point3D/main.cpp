@@ -14,7 +14,7 @@ int main(){
     Point3d  a(1,2,3);
 
     //zadanie 6
-    //zwraca odległośc pomiędzy punktami  w 2d
+    //zwraca odległośc pomiędzy punktami  w 2d i wspołrzednymi x i y punktu 3d(ktory jest rzutowany na klase bazowa Point)
     Point3d point2d(1,2);
     Point3d point3d (4,1,3);
     cout<<"Distance:"<<point2d.Distance(point3d)<<endl;
