@@ -16,4 +16,3 @@ target_include_directories($LIBRARY_NAME PUBLIC .)
 add_executable($PROJECT_LOWER \${SOURCE_FILES} main.cpp)
 
 target_link_libraries($PROJECT_LOWER $LIBRARY_NAME)
-

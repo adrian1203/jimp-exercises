@@ -33,8 +33,8 @@ TEST_P(SquareTests, ProperSquares) {
   tie(expected_circumference, expected_area) = param.second;
   auto square = make_unique<Square>(p1, p2, p3, p4);
 
-  EXPECT_NEAR(expected_circumference, square->Circumference(), 1e-15d);
-  EXPECT_NEAR(expected_area, square->Area(), 1e-15d);
+  EXPECT_NEAR(expected_circumference, square->Circumference(), 1e-15);
+  EXPECT_NEAR(expected_area, square->Area(), 1e-15);
 }
 
 std::vector<TestParam> squareTestData{
