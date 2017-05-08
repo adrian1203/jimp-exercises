@@ -69,7 +69,7 @@ namespace academia {
         json->Header("building");
         json->IntegerField("id", id_);
         json->StringField("name", name_);
-        json->AddOut("\""s + "rooms" + "\": ["s);
+        json->AddOut("\"rooms\": [");
         int i = 0;
         for (auto &v : room_) {
             v.Serialize(json);
