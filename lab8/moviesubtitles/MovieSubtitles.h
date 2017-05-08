@@ -1,105 +1,62 @@
 //
-// Created by Adrian on 2017-05-01.
+// Created by adrian on 02.05.2017.
 //
 
 #ifndef JIMP_EXERCISES_MOVIESUBTITLES_H
 #define JIMP_EXERCISES_MOVIESUBTITLES_H
 
-#include <string>
 #include <sstream>
-#include <stdexcept>
-#include <cstdlib>
 #include <vector>
 
-using namespace std;
+using  namespace std;
 namespace moviesubs {
-
     class MovieSubtitles {
     public:
-        MovieSubtitles() {};
-
-        ~MovieSubtitles() {};
-
-        virtual void ShiftAllSubtitlesBy(int delay, int framerate, std::stringstream *in, std::stringstream *out) {};
-
-    };
-
-
-    class SubRipSubtitles : public MovieSubtitles {
-    public:
-        SubRipSubtitles() : MovieSubtitles() {};
-        void IfNegative(int delay, int framerate);
-        ~SubRipSubtitles() {};
-
-        virtual void ShiftAllSubtitlesBy(int delay, int framerate, std::stringstream *in, std::stringstream *out);
+        virtual void ShiftAllSubtitlesBy(int first, int second, stringstream *in, stringstream *out);
 
     };
 
     class MicroDvdSubtitles : public MovieSubtitles {
     public:
-        MicroDvdSubtitles() : MovieSubtitles() {};
-
-        ~MicroDvdSubtitles() {};
-
-        virtual void ShiftAllSubtitlesBy(int delay, int framerate, std::stringstream *in, std::stringstream *out);
+        virtual void ShiftAllSubtitlesBy(int first, int second, stringstream *in, stringstream *out) override;
 
 
     };
 
-    /*exception*/
-    class MovieSubtitlesError : public std::runtime_error {
+    class SubRipSubtitles : public MovieSubtitles {
     public:
-        MovieSubtitlesError(string error_message) : runtime_error(error_message) {};
+        virtual void ShiftAllSubtitlesBy(int first, int second, stringstream *in, stringstream *out) override;
 
-        //virtual ~MovieSubtitlesError() {};
     };
 
-    class NegativeFrameAfterShift : public MovieSubtitlesError {
+    class NegativeFrameAfterShift{
+
+    };
+
+    /*class SubtitleEndBeforeStart {
+        int line;
+        string string1;
     public:
-        NegativeFrameAfterShift() : MovieSubtitlesError{"Negative error"} {};
+        SubtitleEndBeforeStart(int i,string sub);
 
-        ~NegativeFrameAfterShift() {};
+        int LineAt()const;
+        string what()const;
     };
-
-    class InvalidSubtitleLineFormat : public MovieSubtitlesError {
+     */
+    class SubtitleEndBeforeStart: public std::runtime_error{
     public:
-        InvalidSubtitleLineFormat() : MovieSubtitlesError("Invalid error") {};
-
-        //~InvalidSubtitleLineFormat() {};
+        SubtitleEndBeforeStart() = delete;
+        SubtitleEndBeforeStart(std::string str, int line):std::runtime_error("At line " + std::to_string(line) + ": " +
+                                                                          str),line_(line){};
+        int LineAt () const {return line_;}
+    private:
+        int line_;
     };
 
-    class WrongFramerateException : public std::invalid_argument {
-    public:
-        WrongFramerateException(const int &framerate) : invalid_argument{"Framerate error "}, framerate_{framerate} {};
-        int framerate_;
-        //~WrongFramerateException(){};
+    class InvalidSubtitleLineFormat {};
+    class MissingTimeSpecification{};
+    class OutOfOrderFrames{};
+    bool Check_number(const char &x);
 
-    };
-
-    string ReturnLineWithError(int line, stringstream *in);
-
-    class SubtitleEndBeforeStart : public MovieSubtitlesError {
-    public:
-        SubtitleEndBeforeStart(const pair<int, int> &line, stringstream *in) :
-                value_line_{line.first},
-                MovieSubtitlesError(
-                        "At line " + to_string(line.first) + ": " + ReturnLineWithError(line.second, in)) {};
-        //~SubtitleEndBeforeStart(){};
-        int value_line_;
-
-        int LineAt() const;
-    };
-    class MissingTimeSpecification : public MovieSubtitlesError{
-    public:
-        MissingTimeSpecification() :  MovieSubtitlesError("Missing "){};
-        ~MissingTimeSpecification(){};
-    };
-
-    class OutOfOrderFrames : public MovieSubtitlesError{
-    public:
-        OutOfOrderFrames() :  MovieSubtitlesError("Out "){};
-        ~OutOfOrderFrames(){};
-    };
-
-}
+};
 #endif //JIMP_EXERCISES_MOVIESUBTITLES_H

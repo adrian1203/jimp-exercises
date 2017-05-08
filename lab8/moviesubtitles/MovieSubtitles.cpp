@@ -1,11 +1,127 @@
 //
-// Created by Adrian on 2017-05-01.
+// Created by adrian on 02.05.2017.
 //
 
 #include "MovieSubtitles.h"
+#include <vector>
+#include <iostream>
 
-using namespace std;
-namespace moviesubs {
+namespace moviesubs{
+
+
+    void MovieSubtitles::ShiftAllSubtitlesBy(int first, int second, stringstream *in, stringstream *out) {}
+    void MicroDvdSubtitles::ShiftAllSubtitlesBy(int first, int second, stringstream *in, stringstream *out) {
+
+        int delay,integertmp;
+        string workingon,tmp,replacment,res;
+        vector<int> begin,end,time;
+        bool type;
+        type= true;
+        delay=first*second/1000;
+        if (first<0 ) throw NegativeFrameAfterShift();
+        if (second<0) throw invalid_argument("error");
+        workingon=in->str();
+        for (int i = 0; i <workingon.size() ; i++) {
+            if (workingon[i] == '{') {
+                begin.emplace_back(i+1);}
+            if (workingon[i] == '}') {
+                end.emplace_back(i-1);
+            }
+        }
+        //  if ((begin.size()!=end.size() or (begin.size()+end.size())%2!=0)or begin.size()%2!=0 or end.size()%2!=0) throw InvalidSubtitleLineFormat();
+        for (int j = 0; j <begin.size() ; j++) {
+            tmp=workingon.substr(begin[j],end[j]-begin[j]+1);
+            for (int l = 0; l <tmp.size() ; l++) {
+                if((int(tmp[l])<48 or int(tmp[l])>57) ) type= false ;
+
+            }
+
+            if ((type== false and tmp.find(':')>tmp.size()) or tmp.size()==0) throw  InvalidSubtitleLineFormat();
+            if (type) {
+                integertmp = stoi(tmp) + delay;
+                time.emplace_back(stoi(tmp));
+
+                replacment = to_string(integertmp);
+
+
+
+                workingon.replace(begin[j], replacment.size(), replacment);
+                if (replacment.size() > tmp.size()) {
+                    for (int i = j; i < begin.size(); i++) {
+                        begin[i]++;
+                        end[i]++;
+
+                    }
+                    workingon.insert(begin[j]+replacment.size()-1,"}");
+                }
+
+
+            }
+            type= true;
+
+        }
+        if (time.size()%2==1) throw InvalidSubtitleLineFormat();
+        if (time.size()%2==0){
+
+            for (int k = 0; k <time.size()-1 ; k+=2) {
+                //throw SubtitleEndBeforeStart(((k+1)/2)+1,in->str());
+                if (time[k]>time[k+1]) {
+                    int currentline=1;
+                    int line=((k+1)/2)+1;
+                    string string1=in->str();
+                    string linetext,result;
+                    while (currentline<line+1){
+                        for (int i = 0; i <string1.size() ; i++) {
+                            if (string1[i]=='\n')
+                            {
+                                currentline++;
+                                i++;
+                            }
+                            if (currentline>line) break;
+                            if (currentline==line) linetext+=string1[i];
+                        }
+                    }
+                    result="At line " +to_string(line) +": "+linetext;
+                    //return result;
+                    throw SubtitleEndBeforeStart(linetext, line);
+                }
+
+
+            }
+        }
+        if (workingon[workingon.size()-1]!='\n') workingon+='\n';
+
+        out->clear();
+
+        (*out)<<workingon;
+
+    }
+
+    /*SubtitleEndBeforeStart::SubtitleEndBeforeStart(int i,string sub) {
+        line=i;
+        string1=sub;
+    }
+    int SubtitleEndBeforeStart::LineAt()const {
+        return line;
+    }
+    string SubtitleEndBeforeStart::what() const {
+        int currentline=1;
+        string linetext,result;
+        while (currentline<line+1){
+            for (int i = 0; i <string1.size() ; i++) {
+                if (string1[i]=='\n')
+                {
+                    currentline++;
+                    i++;
+                }
+                if (currentline>line) break;
+                if (currentline==line) linetext+=string1[i];
+            }
+        }
+        result="At line " +to_string(line) +": "+linetext;
+        return result;
+    }
+     */
     bool Check_number(const char &x) {
         string numbers = "0123456789";
         for (int i = 0; i < 10; i++) {
@@ -13,18 +129,50 @@ namespace moviesubs {
         }
         return false;
     }
-    int SubtitleEndBeforeStart::LineAt() const {
-        return value_line_;
-    }
 
-    void SubRipSubtitles::IfNegative(int delay, int framerate) {
-        if(delay < 0 || framerate < 0) throw NegativeFrameAfterShift();
-    }
-    void SubRipSubtitles::ShiftAllSubtitlesBy(int delay, int framerate, stringstream *in, stringstream *out) {
-        string changed_text;
+
+    void SubRipSubtitles::ShiftAllSubtitlesBy(int first, int second, stringstream *in, stringstream *out) {
+        int delay=first;
+        vector<int>positon,lnum;
+        string subtitles=(*in).str();
+        vector<string> times;
+        string changed_text,tmp="";
         changed_text = (*in).str();
-        int seconds, miliseconds;
-        IfNegative(delay,framerate);
+        int seconds, miliseconds,linenumber=2,lnumit=1;
+
+        bool chek= true;
+        lnum.emplace_back(1);
+        for (int k = 2; k <subtitles.size() ; k++) {
+            if (subtitles.find("\n"+to_string(k)+"\n")<=subtitles.size()) lnum.emplace_back(k);
+
+
+        }
+        lnum.shrink_to_fit();
+        for (int j = 0; j <lnum.size()-1 ; ++j) {
+            if (lnum[j]!=lnum[j+1]-1) throw OutOfOrderFrames();
+        }
+        if (first<0 and chek) throw NegativeFrameAfterShift();
+        if (second<0) throw invalid_argument("error");
+
+
+        for (int i = 0; i <subtitles.size() ;i++) {
+            if(subtitles[i]=='>') {
+
+                positon.emplace_back(i);
+            }
+        }
+
+        for (auto &n:positon) {
+
+          //  if (subtitles.substr())
+            if (subtitles.substr(n-3,5)!=" --> ") throw InvalidSubtitleLineFormat();
+            if (subtitles[n+4]!=':' or subtitles[n+7]!=':' or subtitles[n-10]!=':' or subtitles[n-13]!=':') throw InvalidSubtitleLineFormat();
+            if( subtitles[n+10]!=',' or  subtitles[n-7]!=',' ) throw InvalidSubtitleLineFormat();
+
+
+        }
+        if (lnum.size()!=positon.size()) throw InvalidSubtitleLineFormat();
+
 
         for (int i = 0; i < changed_text.length(); i++) {
             if ((changed_text[i] == '\n' and Check_number(changed_text[i + 1])) or
@@ -67,98 +215,6 @@ namespace moviesubs {
                 }
             } else *out << changed_text[i];
         }
+
     }
-
-    //bledy do micordvd
-
-
-    std::string ReturnLineWithError(int i, std::stringstream *in) {
-        i=i+1;
-        string tmp_text=(*in).str();
-        string text;
-
-        while (tmp_text[i] != '\n') {
-            text += tmp_text[i];
-            i++;
-        }
-        return text;
-    }
-
-
-    void
-    MicroDvdSubtitles::ShiftAllSubtitlesBy(int delay, int framerate, std::stringstream *in, std::stringstream *out) {
-        if (framerate <= 0) throw WrongFramerateException(framerate);
-        if (delay < 0) throw NegativeFrameAfterShift();
-        string changed_text, tmp_fre;
-        int tmp1;
-        pair<int, int> line;
-        line.first++;
-        changed_text = (*in).str();
-        int lenght = changed_text.length();
-        for (int i = 0; i < lenght; i++) {
-            if (changed_text[i] == '\n') {
-                line.first++;
-                line.second = i;
-            }
-            if (changed_text[i] == '}') throw InvalidSubtitleLineFormat();
-            if (changed_text[i] != '{') {
-                *out << changed_text[i];
-            } else {
-                i++;
-                tmp_fre.clear();
-                if (changed_text[i] == '}') {
-                    throw InvalidSubtitleLineFormat();
-                }
-                while (changed_text[i] != '}') {
-                    if (!Check_number(changed_text[i]))throw InvalidSubtitleLineFormat();
-                    tmp_fre += changed_text[i];
-                    i++;
-                }
-                tmp1 = atoi(tmp_fre.c_str());
-                if (tmp1 < 0) {
-                    throw NegativeFrameAfterShift();
-                }
-                i++;
-                tmp_fre.clear();
-
-                if (changed_text[i] != '{') {
-                    throw InvalidSubtitleLineFormat();
-                }
-                i++;
-                if (changed_text[i] == '}') {
-                    throw InvalidSubtitleLineFormat();
-                }
-                while (changed_text[i] != '}') {
-                    if (!Check_number(changed_text[i]))throw InvalidSubtitleLineFormat();
-                    tmp_fre += changed_text[i];
-                    i++;
-                }
-
-                if (tmp1 >= atoi(tmp_fre.c_str())) {
-                    throw SubtitleEndBeforeStart(line, in);
-                }
-                if (atoi(tmp_fre.c_str()) < 0) {
-                    throw NegativeFrameAfterShift();
-                }
-                *out << '{' + to_string(tmp1 + (framerate * delay) / 1000) + '}' + '{' +
-                        to_string(atoi(tmp_fre.c_str()) + (framerate * delay) / 1000) + '}';
-                if (changed_text[i + 1] == '{') {
-                    *out << '{';
-                    i = i + 2;
-                    while (changed_text[i] != '}') {
-                        *out << changed_text[i];
-                        i++;
-                    }
-                    *out << '}';
-                }
-            }
-
-        }
-        if (changed_text[lenght - 1] != '\n') {
-            *out << '\n';
-        }
-    }
-
-
-
 }
