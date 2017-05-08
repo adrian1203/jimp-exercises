@@ -1,7 +1,6 @@
 //
 // Created by adrian on 02.05.2017.
 //
-
 #include "MovieSubtitles.h"
 #include <vector>
 #include <iostream>
@@ -64,27 +63,8 @@ namespace moviesubs{
         if (time.size()%2==0){
 
             for (int k = 0; k <time.size()-1 ; k+=2) {
-                //throw SubtitleEndBeforeStart(((k+1)/2)+1,in->str());
-                if (time[k]>time[k+1]) {
-                    int currentline=1;
-                    int line=((k+1)/2)+1;
-                    string string1=in->str();
-                    string linetext,result;
-                    while (currentline<line+1){
-                        for (int i = 0; i <string1.size() ; i++) {
-                            if (string1[i]=='\n')
-                            {
-                                currentline++;
-                                i++;
-                            }
-                            if (currentline>line) break;
-                            if (currentline==line) linetext+=string1[i];
-                        }
-                    }
-                    result="At line " +to_string(line) +": "+linetext;
-                    //return result;
-                    throw SubtitleEndBeforeStart(linetext, line);
-                }
+
+                if (time[k]>time[k+1]) throw SubtitleEndBeforeStart(((k+1)/2)+1,in->str(),"micro");
 
 
             }
@@ -97,9 +77,10 @@ namespace moviesubs{
 
     }
 
-    /*SubtitleEndBeforeStart::SubtitleEndBeforeStart(int i,string sub) {
+    SubtitleEndBeforeStart::SubtitleEndBeforeStart(int i,string sub, string micorsub) {
         line=i;
         string1=sub;
+        mos=micorsub;
     }
     int SubtitleEndBeforeStart::LineAt()const {
         return line;
@@ -107,21 +88,24 @@ namespace moviesubs{
     string SubtitleEndBeforeStart::what() const {
         int currentline=1;
         string linetext,result;
-        while (currentline<line+1){
-            for (int i = 0; i <string1.size() ; i++) {
-                if (string1[i]=='\n')
-                {
-                    currentline++;
-                    i++;
+        if (mos=="micro"){
+            while (currentline<line+1){
+                for (int i = 0; i <string1.size() ; i++) {
+                    if (string1[i] == '\n') {
+                        currentline++;
+                        i++;
+                    }
+                    if (currentline > line) break;
+                    if (currentline == line) linetext += string1[i];
+
+
                 }
-                if (currentline>line) break;
-                if (currentline==line) linetext+=string1[i];
             }
         }
+        if (mos=="sub") linetext=string1;
         result="At line " +to_string(line) +": "+linetext;
         return result;
     }
-     */
     bool Check_number(const char &x) {
         string numbers = "0123456789";
         for (int i = 0; i < 10; i++) {
@@ -138,7 +122,7 @@ namespace moviesubs{
         vector<string> times;
         string changed_text,tmp="";
         changed_text = (*in).str();
-        int seconds, miliseconds,linenumber=2,lnumit=1;
+        int seconds, miliseconds,linenumber=1,lnumit=1,min[2],sec[2],hour[2];
 
         bool chek= true;
         lnum.emplace_back(1);
@@ -151,7 +135,7 @@ namespace moviesubs{
         for (int j = 0; j <lnum.size()-1 ; ++j) {
             if (lnum[j]!=lnum[j+1]-1) throw OutOfOrderFrames();
         }
-        if (first<0 and chek) throw NegativeFrameAfterShift();
+        if (first<0 ) throw NegativeFrameAfterShift();
         if (second<0) throw invalid_argument("error");
 
 
@@ -164,11 +148,15 @@ namespace moviesubs{
 
         for (auto &n:positon) {
 
-          //  if (subtitles.substr())
+            min[0]=stoi(subtitles.substr(n-12,2));
+            min[1]=stoi(subtitles.substr(n+5,2));
+            sec[0]=stoi(subtitles.substr(n-9,2));
+            sec[1]=stoi(subtitles.substr(n+8,2));
+            if(min[0]>min[1] or(min[0]<min[1] and sec[0]>sec[1])) throw SubtitleEndBeforeStart(linenumber,subtitles.substr(n-15,29),"sub");
+            linenumber++;
             if (subtitles.substr(n-3,5)!=" --> ") throw InvalidSubtitleLineFormat();
             if (subtitles[n+4]!=':' or subtitles[n+7]!=':' or subtitles[n-10]!=':' or subtitles[n-13]!=':') throw InvalidSubtitleLineFormat();
             if( subtitles[n+10]!=',' or  subtitles[n-7]!=',' ) throw InvalidSubtitleLineFormat();
-
 
         }
         if (lnum.size()!=positon.size()) throw InvalidSubtitleLineFormat();
@@ -215,6 +203,7 @@ namespace moviesubs{
                 }
             } else *out << changed_text[i];
         }
+        if (changed_text[changed_text.size()-2]!='\n') *out<<'\n';
 
     }
 }

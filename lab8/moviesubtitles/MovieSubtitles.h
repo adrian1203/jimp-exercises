@@ -1,7 +1,6 @@
 //
 // Created by adrian on 02.05.2017.
 //
-
 #ifndef JIMP_EXERCISES_MOVIESUBTITLES_H
 #define JIMP_EXERCISES_MOVIESUBTITLES_H
 
@@ -33,24 +32,15 @@ namespace moviesubs {
 
     };
 
-    /*class SubtitleEndBeforeStart {
+    class SubtitleEndBeforeStart {
         int line;
         string string1;
+        string mos;
     public:
-        SubtitleEndBeforeStart(int i,string sub);
+        SubtitleEndBeforeStart(int i,string sub, string microrsub);
 
         int LineAt()const;
         string what()const;
-    };
-     */
-    class SubtitleEndBeforeStart: public std::runtime_error{
-    public:
-        SubtitleEndBeforeStart() = delete;
-        SubtitleEndBeforeStart(std::string str, int line):std::runtime_error("At line " + std::to_string(line) + ": " +
-                                                                          str),line_(line){};
-        int LineAt () const {return line_;}
-    private:
-        int line_;
     };
 
     class InvalidSubtitleLineFormat {};
