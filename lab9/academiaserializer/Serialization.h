@@ -28,7 +28,7 @@ namespace academia {
 
         virtual void Serialize(XmlSerializer *xml) =0;
     };
-
+//serializer
     class Serializer {
     public:
 
