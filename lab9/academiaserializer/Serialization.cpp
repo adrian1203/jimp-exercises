@@ -52,7 +52,7 @@ namespace academia {
     }
 
 
-    //Building
+    //Building...
     void Building::Serialize(XmlSerializer *xml) {
         xml->Header("building");
         xml->IntegerField("id", id_);
