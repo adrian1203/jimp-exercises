@@ -1,18 +1,11 @@
 //
 // Created by Adrian on 2017-05-13.
 //
-
 #include "Scheduler.h"
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <initializer_list>
-#include <list>
-#include <array>
-#include <memory>
+
 namespace academia{
 
-    Schedule &Schedule::OfTeacher(int teacherid) {
+    const Schedule &Schedule::OfTeacher(int teacherid) {
         Schedule teacher;
         for (int i = 0; i < schedule_.size(); ++i) {
             if (schedule_[i].TeacherId() == teacherid) {
@@ -39,3 +32,4 @@ namespace academia{
 
 
 }
+
