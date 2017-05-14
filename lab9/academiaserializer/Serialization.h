@@ -1,101 +1,186 @@
+//
+// Created by Adrian on 2017-05-04.
+//
+
 #ifndef JIMP_EXERCISES_SERIALIZATION_H
 #define JIMP_EXERCISES_SERIALIZATION_H
-#include <string>
+
+#include<string>
 #include <vector>
 #include <functional>
-#include <cstdint>
-#include <cassert>
+
 using namespace std;
-namespace academia{
+using namespace std::literals;
+
+namespace academia {
+
     class Serializer;
+
+    class JsonSerializer;
+
     class XmlSerializer;
-    class BuildingRepository;
-    class Serializable{
+
+    class Serializable {
     public:
-        virtual void Serialize(Serializer *out)const=0;
+        virtual void Serialize(Serializer *serializer) =0;
 
+        virtual void Serialize(JsonSerializer *json) =0;
 
+        virtual void Serialize(XmlSerializer *xml) =0;
     };
-    class Serializer{
+//serializer
+    class Serializer {
     public:
-        Serializer(std::ostream *out): out_(out){};
-        virtual void IntegerField(const string &field_name, int value) = 0;
-        virtual void DoubleField(const string &field_name, double value) = 0;
-        virtual void StringField(const string &field_name, const std::string &value) = 0;
-        virtual void BooleanField(const string &field_name, bool value) = 0;
-        virtual void SerializableField(const string &field_name, const academia::Serializable &value)=0;
+
+        Serializer(std::ostream *out) : out_(out) {}
+
+        virtual void IntegerField(const string &field_name, int value) {}
+
+        virtual void DoubleField(const string &field_name, double value) {}
+
+        virtual void StringField(const string &field_name, const string &value) {}
+
+        virtual void BooleanField(const string &field_name, bool value) {}
+
+        virtual void SerializableField(const string &field_name, const academia::Serializable &value) {}
+
         virtual void ArrayField(const string &field_name,
-                                const vector<reference_wrapper<const academia::Serializable>> &value)=0;
-        virtual void Header(const std::string &object_name)=0;
-        virtual void Footer(const std::string &object_name)=0;
+                                const vector<reference_wrapper<const academia::Serializable>> &value) {}
+
+        virtual void Header(const string &object_name) {}
+
+        virtual void Footer(const string &object_name) {}
+
     protected:
         ostream *out_;
     };
-    class XmlSerializer :public Serializer{
+
+    class XmlSerializer {
     public:
-        XmlSerializer(std::ostream *out): Serializer(out){};
-        void IntegerField(const string &field_name, int value) override ;
-        void DoubleField(const string &field_name, double value) override ;
-        void StringField(const string &field_name, const std::string &value) override ;
-        void BooleanField(const string &field_name, bool value) override ;
-        void SerializableField(const string &field_name, const academia::Serializable &value) override ;
-        void ArrayField(const string &field_name,
-                        const vector<reference_wrapper<const academia::Serializable>> &value) override ;
-        void Header(const std::string &object_name)override ;
-        void Footer(const std::string &object_name)override ;
 
+        XmlSerializer(ostream *out) : out_(out) {}
 
-        ;
-    };
-    class JsonSerializer : public Serializer{
-    public:
-        JsonSerializer(std::ostream *out):Serializer(out){};
-        void IntegerField(const string &field_name, int value) override ;
-        void DoubleField(const string &field_name, double value) override ;
-        void StringField(const string &field_name, const std::string &value) override ;
-        void BooleanField(const string &field_name, bool value) override ;
-        void SerializableField(const string &field_name, const academia::Serializable &value) override ;
-        void ArrayField(const string &field_name,
-                        const vector<reference_wrapper<const academia::Serializable>> &value) override ;
-        void Header(const std::string &object_name)override ;
-        void Footer(const std::string &object_name)override ;
+        virtual void IntegerField(const string &field_name, int value);
 
+        virtual void DoubleField(const string &field_name, double value) {};
 
+        virtual void StringField(const string &field_name, const string &value);
+
+        virtual void BooleanField(const string &field_name, bool value) {}
+
+        virtual void SerializableField(const string &field_name, const academia::Serializable &value) {}
+
+        virtual void ArrayField(const string &field_name,
+                                const vector<reference_wrapper<const academia::Serializable>> &value) {}
+
+        virtual void Header(const string &object_name);
+
+        virtual void Footer(const string &object_name);
+
+    protected:
+        ostream *out_;
 
     };
-    class Room :public Serializable{
+
+    class JsonSerializer {
     public:
-        enum class Type{
+
+        JsonSerializer(ostream *out) : out_(out) {}
+
+        virtual void IntegerField(const string &field_name, int value);
+
+        virtual void DoubleField(const string &field_name, double value) {};
+
+        virtual void StringField(const string &field_name, const std::string &value);
+
+        virtual void BooleanField(const string &field_name, bool value) {}
+
+        virtual void SerializableField(const string &field_name, const academia::Serializable &value) {}
+
+        virtual void ArrayField(const string &field_name,
+                                const vector<reference_wrapper<const academia::Serializable>> &value) {}
+
+        virtual void Header(const string &object_name);
+
+        virtual void Footer(const string &object_name);
+
+
+        virtual void AddOut(string input);
+
+
+    protected:
+        ostream *out_;
+    };
+
+
+    class Room : public Serializable {
+    public:
+
+        enum Type {
             COMPUTER_LAB,
             LECTURE_HALL,
-            CLASSROOM
+            CLASSROOM,
         };
+
         Room(int id, const string &name, Type type);
-        void Serialize(Serializer *serializer) const override;
+
         string FindType() const;
 
-    public:
-        int id_;
-        string name_;
-        Type type_;
+        void Serialize(Serializer *serializer) override;
 
-    };
-    class Building:public Serializable{
-    public:
-        Building(int id, const string &name, const vector<reference_wrapper<const Serializable>> room_);
-        void Serialize(Serializer *serializer) const override ;
-        int GetId() { return id_; }
-        std::string GetName() { return name_; }
+        void Serialize(XmlSerializer *xml) override;
+
+        void Serialize(JsonSerializer *json) override;
+
     private:
         int id_;
         string name_;
-        const vector<reference_wrapper<const Serializable>> room_;
+        Type type_;
+    };
 
+
+    class Building : public Serializable {
+    public:
+        Building(int id, string name, std::initializer_list<Room> rooms);
+
+        void Serialize(Serializer *serializer) override {}
+
+        void Serialize(XmlSerializer *xml) override;
+
+        void Serialize(JsonSerializer *json) override;
+
+
+    private:
+        int id_;
+        string name_;
+        vector<Room> room_;
 
     };
-    class BuildingRepository{
+   /* class BuildingRepository{
+    public:
+        BuildingRepository(const vector<reference_wrapper<const Serializable>> building);
+        void Add(Building building);
+        void StoreAll(JsonSerializer *serializer) const;
+        void StoreAll (XmlSerializer *serializer) const;
 
-    };
+    private:
+        vector<reference_wrapper<const Serializable>> building_;
+    };*/
+   class BuildingRepository
+   {
+   public:
+       BuildingRepository():buildings{}{};
+       BuildingRepository(const std::vector<std::reference_wrapper<const academia::Serializable>> &buildings);
+       void Add(const Building &building);
+       void StoreAll(Serializer *serializer) const;
+
+   private:
+       std::vector<std::reference_wrapper<const academia::Serializable>> buildings;
+
+   };
+
 }
 
+}
 #endif //JIMP_EXERCISES_SERIALIZATION_H
+
