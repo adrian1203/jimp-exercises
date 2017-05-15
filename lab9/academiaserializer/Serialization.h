@@ -8,6 +8,10 @@
 #include<string>
 #include <vector>
 #include <functional>
+#include <experimental/optional>
+#include <iosfwd>
+#include <memory>
+
 
 using namespace std;
 using namespace std::literals;
@@ -148,7 +152,7 @@ namespace academia {
         void Serialize(XmlSerializer *xml) override;
 
         void Serialize(JsonSerializer *json) override;
-
+        const int Id() const;
 
     private:
         int id_;
@@ -156,7 +160,7 @@ namespace academia {
         vector<Room> room_;
 
     };
-   /* class BuildingRepository{
+  /*  class BuildingRepository{
     public:
         BuildingRepository(const vector<reference_wrapper<const Serializable>> building);
         void Add(Building building);
@@ -166,21 +170,30 @@ namespace academia {
     private:
         vector<reference_wrapper<const Serializable>> building_;
     };*/
-   class BuildingRepository
-   {
+  /* class BuildingRepository {
    public:
-       BuildingRepository():buildings{}{};
-       BuildingRepository(const std::vector<std::reference_wrapper<const academia::Serializable>> &buildings);
-       void Add(const Building &building);
+       BuildingRepository();
+       BuildingRepository(std::initializer_list<Building> elements);
        void StoreAll(Serializer *serializer) const;
-
+       //void StoreAll(JsonSerializer *serializer) const;
+       void Add(Building b);
+       std::experimental::optional<Building> operator[](int id) const;
    private:
-       std::vector<std::reference_wrapper<const academia::Serializable>> buildings;
-
-   };
+       std::vector<Building> elements_;
+   };*/
+  class BuildingRepository {
+  public:
+      BuildingRepository();
+      BuildingRepository(const std::initializer_list<Building> &buildings);
+      void Add(const Building &b);
+      void StoreAll(Serializer *serial) const;
+      std::experimental::optional<Building> operator[](int id) const;
+  private:
+      std::vector<Building> buildings_;
+  };
 
 }
 
-}
+
 #endif //JIMP_EXERCISES_SERIALIZATION_H
 

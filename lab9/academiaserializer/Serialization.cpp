@@ -140,18 +140,52 @@ namespace academia {
     void JsonSerializer::AddOut(string input) {
         *out_ << input;
     }
-    BuildingRepository::BuildingRepository(const std::vector<std::reference_wrapper<const academia::Serializable>> &building)
-    {
-        this->buildings = building;
+    /*BuildingRepository::BuildingRepository(std::initializer_list<Building> elements) {
+        for( auto n : elements){
+            elements_.emplace_back(n);
+        }
     }
 
-    void BuildingRepository::Add(const Building &building)
-    {
-        buildings.emplace_back(building);
+
+    BuildingRepository::BuildingRepository() {
+        elements_.clear();
     }
 
-    void BuildingRepository::StoreAll(Serializer *serializer) const
-    {
-        serializer->ArrayField("building_repository", this->buildings);
+    /*void BuildingRepository::StoreAll(XmlSerializer *serializer) const {
+        serializer->Header("building_repository");
+        std::vector<std::reference_wrapper<const Serializable>> tmp;
+        for(const Building &n : elements_){
+            tmp.emplace_back(n);
+        }
+        serializer->ArrayField("buildings",tmp);
+        serializer->Footer("building_repository");
     }
+
+    void BuildingRepository::StoreAll(Serializer *serial) const {
+        std::vector<std::reference_wrapper<const Serializable>> wrappers;
+        serial->Header("building_repository");
+        for(auto &it : elements_){
+            wrappers.emplace_back(it);
+        }
+        serial->ArrayField("buildings", wrappers);
+        serial->Footer("building_repository");
+    }
+    void BuildingRepository::Add(Building b) {
+        elements_.emplace_back(b);
+    }
+
+    int Building::Id(void) const {
+        return id_;
+    }
+
+    std::experimental::optional<Building> BuildingRepository::operator[](int id) const {
+        for(auto &n : elements_){
+            if(n.Id() == id){
+                return std::experimental::make_optional(n);
+            }
+        }
+
+        return experimental::optional<Building>();
+    }*/
+
 }
