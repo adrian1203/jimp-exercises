@@ -13,55 +13,74 @@
 #include <list>
 #include <array>
 #include <memory>
+#include <experimental/optional>
+#include <map>
+#include <set>
+
 using namespace std;
 namespace academia {
     class SchedulingItem;
-    class SchedulingItem {
-    public:
-        SchedulingItem(std::initializer_list<unsigned long> it) {
-            std::copy(it.begin(), it.end(), scheduling_.begin());
-        }
-
-        int CourseId() const { return scheduling_[0]; }
-
-        int TeacherId() const { return scheduling_[1]; };
-
-        int RoomId() const { return scheduling_[2]; };
-
-        int TimeSlot() const { return scheduling_[3]; }
-
-        int Year() const { return scheduling_[4]; }
-
-    private:
-        vector<int> scheduling_;
-    };
 
     class Schedule {
     public:
-        Schedule() {}
+        Schedule OfTeacher(int teacher_id) const;
 
-        void InsertScheduleItem(SchedulingItem k) { schedule_.emplace_back(k); }
+        Schedule OfRoom(int room_id) const;
 
-        const Schedule &OfTeacher(int id);
+        Schedule OfYear(int year) const;
 
-        const Schedule OfRoom(int room);
+        std::vector<int> AvailableTimeSlots(int n_time_slots) const;
 
-        const Schedule OfYear(int year);
+        void InsertScheduleItem(const SchedulingItem &item);
 
-        vector<int> AvailableTimeSlots(int room);
+        size_t Size() const;
 
-        unsigned long Size() const { return schedule_.size(); }
+        SchedulingItem operator[](int id) const;
+
+        vector<SchedulingItem> GetSchedule() { return schedule_; }
 
     private:
         vector<SchedulingItem> schedule_;
     };
 
+    class SchedulingItem {
+    public:
+        SchedulingItem(int course, int teacher, int room, int time, int year) :
+                course_id_{course}, teacher_id_{teacher}, room_id_{room},
+                time_slot_{time}, year_{year} {}
+
+        int CourseId() const { return course_id_; };
+
+        int TeacherId() const { return teacher_id_; };
+
+        int RoomId() const { return room_id_; };
+
+        int TimeSlot() const { return time_slot_; };
+
+        int Year() const { return year_; };
 
 
-    SchedulingItem operator[](const Schedule &S, const int &i) {
-        SchedulingItem tmp = schedule_[i];
-        return tmp;
-    }
+    private:
+        int course_id_;
+        int teacher_id_;
+        int room_id_;
+        int time_slot_;
+        int year_;
+
+    };
+
+    class Scheduler {
+    public:
+        Schedule PrepareNewSchedule(const std::vector<int> &rooms,
+                                    const std::map<int, std::vector<int>> &teacher_courses_assignment,
+                                    const std::map<int, std::set<int>> &courses_of_year, int n_time_slots);
+    };
+    class GreedyScheduler{
+
+    };
+    class NoViableSolutionFound{
+
+    };
 }
 
 
