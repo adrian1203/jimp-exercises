@@ -10,12 +10,10 @@
 #include <string>
 #include <algorithm>
 #include <initializer_list>
-#include <list>
-#include <array>
-#include <memory>
 #include <experimental/optional>
 #include <map>
 #include <set>
+#include <stdexcept>
 
 using namespace std;
 namespace academia {
@@ -33,11 +31,12 @@ namespace academia {
 
         void InsertScheduleItem(const SchedulingItem &item);
 
+        vector<SchedulingItem> GetSchedule() { return schedule_; }
+
         size_t Size() const;
 
         SchedulingItem operator[](int id) const;
 
-        vector<SchedulingItem> GetSchedule() { return schedule_; }
 
     private:
         vector<SchedulingItem> schedule_;
@@ -69,17 +68,26 @@ namespace academia {
 
     };
 
+//tylko wirualna
     class Scheduler {
     public:
+        virtual Schedule PrepareNewSchedule(const std::vector<int> &rooms,
+                                            const std::map<int, std::vector<int>> &teacher_courses_assignment,
+                                            const std::map<int, std::set<int>> &courses_of_year, int n_time_slots) =0;
+    };
+
+    class GreedyScheduler : public Scheduler {
+    public:
+        GreedyScheduler() {};
+
         Schedule PrepareNewSchedule(const std::vector<int> &rooms,
                                     const std::map<int, std::vector<int>> &teacher_courses_assignment,
-                                    const std::map<int, std::set<int>> &courses_of_year, int n_time_slots);
+                                    const std::map<int, std::set<int>> &courses_of_year, int n_time_slots) override;
     };
-    class GreedyScheduler{
 
-    };
-    class NoViableSolutionFound{
-
+    class NoViableSolutionFound : public runtime_error {
+    public:
+        NoViableSolutionFound() : runtime_error("error") {}
     };
 }
 
