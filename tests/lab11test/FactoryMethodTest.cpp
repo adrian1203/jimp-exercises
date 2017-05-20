@@ -4,8 +4,9 @@
 
 #include <vector>
 #include <gtest/gtest.h>
-#include <MemLeakTest.h>
+//#include <MemLeakTest.h>
 #include "FactoryMethod.h"
+#include "../lib/memleak/MemLeakTest.h"
 
 using ::factoryMethod::Create;
 using ::factoryMethod::MyType;
