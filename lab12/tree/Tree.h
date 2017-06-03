@@ -5,85 +5,71 @@
 #ifndef JIMP_EXERCISES_TREE_H
 #define JIMP_EXERCISES_TREE_H
 
-
-#include <cstdio>
-#include <iostream>
 #include <memory>
+#include <iostream>
+
 using namespace std;
-namespace tree{
+namespace tree {
 
 
-    template <class Element>
-    class Tree{
-
-        shared_ptr<Tree<Element>>  left;
-        shared_ptr<Tree<Element>> right;
-        Element value;
-        size_t size=0;
+    template<class Element>
+    class Leaf {
     public:
-        void Insert(const Element &e);
-        bool Find(const Element &e);
-        size_t Depth();
-        size_t Size();
-        Element Value();
-        Tree(Element v);
-        // size_t Dig(Tree* wsk);
-        Tree();
-
-        bool operator<(const Element &e);
-
-
+        Leaf(const Element &element) : value_{element}, left_{nullptr}, right_{nullptr} {}
+        Element value_;
+        unique_ptr<Leaf<Element>> left_;
+        unique_ptr<Leaf<Element>> right_;
     };
 
-    template <class Element>
-    Tree<Element>::Tree() {}
 
-    template <class Element>
-    bool Tree<Element>::operator<(const Element &e) {
+    template<class Element>
+    class Tree {
+    public:
+        size_t size_;
+        size_t depth_;
+        unique_ptr<Leaf<Element>> root_;
+        Tree(Element e) :size_{1}, depth_{1},root_{make_unique<Leaf<Element>>(e)}{};
+        Tree() {};
+        size_t Size() {
+            return size_;
+        };
 
-        if (this->value<e)return true;
-        else return false;
+        size_t Depth() {
+            return depth_;
+        };
 
-    }
+        Element Value() {
+            return root_->value_;
+        };
 
-    template <class Element> void Tree<Element>::Insert(const Element &e) {
-        shared_ptr<Tree<Element>> wsk = make_shared<Tree<Element>>(*this);
-        while (wsk != nullptr) {
-            if (wsk->value<e) wsk = wsk->right;
-            else wsk =wsk->left;
-        }
-        wsk->value=e;
-        size++;
+        void Insert(const Element &e) {
+            size_++;
+            size_t tmpdepth = 2;
+            Leaf<Element> *tmp_wsk = root_.get();
+            while (1) {
+                if (e < tmp_wsk->value_) {
+                    if (tmp_wsk->left_ == nullptr) {
+                        depth_ = max(tmpdepth, depth_);
+                        tmp_wsk->left_ = make_unique<Leaf<Element>>(e);
+                        break;
+                    } else {
+                        tmpdepth++;
+                        tmp_wsk = tmp_wsk->left_.get();
+                    }
+                } else {
+                    if (tmp_wsk->right_ == nullptr) {
+                        tmp_wsk->right_ = make_unique<Leaf<Element>>(e);
+                        depth_ = max(tmpdepth, depth_);
+                        break;
+                    } else {
+                        tmpdepth++;
+                        tmp_wsk = tmp_wsk->right_.get();
+                    }
+                }
+            }
+        };
 
-
-
-    }
-    template <class Element> Tree<Element>::Tree(Element v) {
-        this->value=v;
-        size++;
-
-    }
-    template <class Element> bool Tree<Element>::Find(const Element &e){}
-    template <class Element>  size_t Tree<Element>::Depth(){
-        return 1;
-
-    }
-    template <class Element>  size_t Tree<Element>::Size(){
-
-        return size;
-    }
-    template <class Element> Element Tree<Element>:: Value(){
-        return value;
-    }
-
-    /*template <class Element> size_t Tree<Element>::Dig(Tree *wsk) {
-        if (wsk!=NULL){
-            Dig(wsk->left);
-            Dig(wsk->right);
-        }
-    }*/
-
-
-};
+    };
+}
 #endif //JIMP_EXERCISES_TREE_H
 
