@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <MemLeakTest.h>
 #include "TeacherHash.h"
+#include "../lib/memleak/MemLeakTest.h"
 
 using ::academia::Teacher;
 using ::academia::TeacherId;
